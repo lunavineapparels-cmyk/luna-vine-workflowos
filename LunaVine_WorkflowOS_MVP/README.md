@@ -48,7 +48,7 @@ The implementation preserves these V5 rules:
 
 This is an **MVP foundation**, not a claim that the full BrandOS application is complete.
 
-cloudeflare production deployment initialized
+cloudeflare production deployment initialized - the deployment directory is LunaVine_WorkflowOS_MVP
 
 
 ## Marketing Psychology & Consumer Insight
