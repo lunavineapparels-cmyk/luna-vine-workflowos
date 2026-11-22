@@ -9,7 +9,7 @@
     "types": "wrangler types",
     "db:migrate:local": "wrangler d1 migrations apply lunavine-workflowos-dev --local",
     "db:migrate:remote": "wrangler d1 migrations apply lunavine-workflowos-prod --remote",
-    "test": "tsx --test tests/**/*.test.ts"
+    "test": "tsx --test tests/*.test.ts"
   },
   "devDependencies": {
     "tsx": "^4.20.0",
