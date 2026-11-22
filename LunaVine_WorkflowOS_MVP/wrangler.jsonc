@@ -1,0 +1,30 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "lunavine-workflowos-prod",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-11-21",
+  "upload_source_maps": true,
+  "keep_vars": true,
+  "observability": { "enabled": true },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "lunavine-workflowos-prod",
+      "database_id": "955cd260-4374-4673-98f5-2d283204668b",
+      "migrations_dir": "migrations"
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "EVIDENCE",
+      "bucket_name": "lunavine-workflowos-prod-assets"
+    }
+  ],
+  "workflows": [
+    {
+      "name": "lunavine-product-release",
+      "binding": "PRODUCT_RELEASE_WORKFLOW",
+      "class_name": "ProductReleaseWorkflow"
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+INSERT OR IGNORE INTO gate_definitions (id,code,name,category,risk_severity,blocking,default_required,override_allowed,sort_order,active,created_at,updated_at) VALUES
+('gate_brand','BRAND_CREATIVE','Brand / Creative Review','CREATIVE','MEDIUM',1,1,1,10,1,datetime('now'),datetime('now')),
+('gate_legal','LEGAL_IP','Legal / IP Review','LEGAL','CRITICAL',1,1,0,20,1,datetime('now'),datetime('now')),
+('gate_art','ARTWORK_LOCKED','Approved Artwork Version Locked','ASSET','HIGH',1,1,0,30,1,datetime('now'),datetime('now')),
+('gate_ev','EVIDENCE_COMPLETE','Evidence Vault Complete','GOVERNANCE','HIGH',1,1,0,40,1,datetime('now'),datetime('now')),
+('gate_supplier','SUPPLIER_APPROVED','Supplier Choice Approved','SUPPLIER','HIGH',1,1,1,50,1,datetime('now'),datetime('now')),
+('gate_sample','SAMPLE_QA','Sample Quality Threshold','QUALITY','CRITICAL',1,1,0,60,1,datetime('now'),datetime('now')),
+('gate_price','PRICING_MARGIN','Pricing & Margin Verified','FINANCE','HIGH',1,1,1,70,1,datetime('now'),datetime('now')),
+('gate_ship','SHIPPING_RETURNS','Shipping & Returns Aligned','COMMERCE','HIGH',1,1,1,80,1,datetime('now'),datetime('now')),
+('gate_mockup','MOCKUP_RIGHTS_ACCURACY','Mockup Rights & Accuracy','ASSET','HIGH',1,1,0,90,1,datetime('now'),datetime('now')),
+('gate_sku','SKU_MAPPING','Parent / Variant SKU Mapping Complete','PIM','HIGH',1,1,0,100,1,datetime('now'),datetime('now')),
+('gate_prod','PRODUCTION_PREFLIGHT','Print Production Preflight','PRODUCTION','CRITICAL',1,1,0,110,1,datetime('now'),datetime('now')),
+('gate_listing','LISTING_COMPLETE','Listing Package Complete','MARKETPLACE','HIGH',1,1,0,120,1,datetime('now'),datetime('now')),
+('gate_platform','PLATFORM_READINESS','Platform Readiness','MARKETPLACE','HIGH',1,1,0,130,1,datetime('now'),datetime('now')),
+('gate_final','FINAL_HUMAN_REVIEW','Final Human Release Review','RELEASE','CRITICAL',1,1,0,140,1,datetime('now'),datetime('now')),
+('gate_cultural','CULTURAL_REVIEW','Cultural / Native-Language Review','CULTURE','HIGH',1,0,0,200,1,datetime('now'),datetime('now')),
+('gate_child','CHILD_PRODUCT_SAFETY','Children''s Product Safety / Compliance','SAFETY','CRITICAL',1,0,0,210,1,datetime('now'),datetime('now')),
+('gate_claims','CLAIMS_EVIDENCE','Claims Evidence','LEGAL','CRITICAL',1,0,0,220,1,datetime('now'),datetime('now')),
+('gate_privacy','PRIVACY','Privacy Review','PRIVACY','CRITICAL',1,0,0,230,1,datetime('now'),datetime('now')),
+('gate_campaign','CAMPAIGN_RIGHTS_QUALITY','Campaign Rights & Quality','CAMPAIGN','HIGH',1,0,0,240,1,datetime('now'),datetime('now')),
+('gate_gang','GANG_SHEET_PREFLIGHT','DTF Gang Sheet Preflight','PRODUCTION','CRITICAL',1,0,0,250,1,datetime('now'),datetime('now'));
+
+INSERT OR IGNORE INTO configuration_versions (id,config_key,config_value,version,effective_from,rationale,owner_email,approved_by,created_at) VALUES
+('cfg_auto_score_v1','decision.auto_certification_threshold','8.0',1,datetime('now'),'BrandOS default council threshold','SYSTEM','SYSTEM',datetime('now')),
+('cfg_revision_v1','decision.max_auto_revision_cycles','3',1,datetime('now'),'Prevent infinite automated revision loops','SYSTEM','SYSTEM',datetime('now')),
+('cfg_printful_sample_v1','quality.printful_min_sample_score','8.5',1,datetime('now'),'V4.8.1/V5.0 primary supplier threshold','SYSTEM','SYSTEM',datetime('now')),
+('cfg_printify_sample_v1','quality.printify_min_sample_score','8.0',1,datetime('now'),'V4.8.1/V5.0 secondary supplier threshold','SYSTEM','SYSTEM',datetime('now')),
+('cfg_printful_margin_v1','finance.printful_target_margin_pct','40',1,datetime('now'),'V4.8.1/V5.0 target margin','SYSTEM','SYSTEM',datetime('now')),
+('cfg_release_lead_v1','release.minimum_planning_lead_days','90',1,datetime('now'),'Enterprise planning control','SYSTEM','SYSTEM',datetime('now')),
+('cfg_opt_window_v1','release.trend_optimization_window_days','56',1,datetime('now'),'Final optimization window','SYSTEM','SYSTEM',datetime('now'));
