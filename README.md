@@ -52,3 +52,6 @@ This is an **MVP foundation**, not a claim that the full BrandOS application is 
 ## Marketing Psychology & Consumer Insight
 
 WorkflowOS includes `SKILL-MKT-001`, a governed marketing psychology and psychographic intelligence module. It stores consumer segments, behavioral-model boundaries, testable hypotheses, council reviews, experiment drafts, and validated learnings. See `docs/MARKETING_PSYCHOLOGY_SKILL.md`.
+
+## v0.4.0 Access & Help Center
+WorkflowOS now separates authentication from authorization: Cloudflare Access authenticates identity; DB-backed RBAC authorizes application operations. `OWNER_EMAIL` bootstraps as `SUPER_USER`. Help & Training Center content is available under `/help`, and access administration under `/admin/access`.

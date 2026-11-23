@@ -25,3 +25,13 @@ Initial Product Release workflow kernel, Release Gate, Evidence Vault, D1 schema
 - Added `keep_vars: true` so dashboard-managed runtime variables remain intact on deploy.
 - Removed dev-only Access configuration from source; Cloudflare Access is enforced at the edge.
 - Added production deployment checklist.
+
+## 0.4.0 — Identity, RBAC & Help Center
+- Added DB-backed application users, roles, permissions and user-role assignments.
+- Added owner bootstrap to SUPER_USER using OWNER_EMAIL after Cloudflare Access authentication.
+- Added 11 seeded roles and fine-grained entitlements.
+- Added segregation-of-duties control registry and protection against removing the last active Super User.
+- Added permission enforcement on WorkflowOS read/write routes.
+- Added Access Administration UI.
+- Added Help & Training Center with initial step-by-step guides and examples.
+- No role can delete audit history; Super User is not a release-gate bypass.
