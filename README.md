@@ -48,6 +48,8 @@ The implementation preserves these V5 rules:
 
 This is an **MVP foundation**, not a claim that the full BrandOS application is complete.
 
+cloudeflare production deployment initialized - the deployment directory is LunaVine_WorkflowOS_MVP
+
 
 ## Marketing Psychology & Consumer Insight
 
@@ -55,3 +57,5 @@ WorkflowOS includes `SKILL-MKT-001`, a governed marketing psychology and psychog
 
 ## v0.4.0 Access & Help Center
 WorkflowOS now separates authentication from authorization: Cloudflare Access authenticates identity; DB-backed RBAC authorizes application operations. `OWNER_EMAIL` bootstraps as `SUPER_USER`. Help & Training Center content is available under `/help`, and access administration under `/admin/access`.
+
+D1 managed migrations enabled.
