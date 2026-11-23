@@ -54,3 +54,4 @@ cloudeflare production deployment initialized - the deployment directory is Luna
 ## Marketing Psychology & Consumer Insight
 
 WorkflowOS includes `SKILL-MKT-001`, a governed marketing psychology and psychographic intelligence module. It stores consumer segments, behavioral-model boundaries, testable hypotheses, council reviews, experiment drafts, and validated learnings. See `docs/MARKETING_PSYCHOLOGY_SKILL.md`.
+D1 managed migrations enabled.
