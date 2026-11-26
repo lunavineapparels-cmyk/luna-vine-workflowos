@@ -35,3 +35,14 @@ Initial Product Release workflow kernel, Release Gate, Evidence Vault, D1 schema
 - Added Access Administration UI.
 - Added Help & Training Center with initial step-by-step guides and examples.
 - No role can delete audit history; Super User is not a release-gate bypass.
+
+## v0.5.0 — Professional Command Center
+
+- Rebuilt the visual system for a professional enterprise-grade internal OS.
+- Added executive Control Tower, governance posture, gate completion, owner-focus and command shortcuts.
+- Grouped navigation by Operate / Govern / Learn & Admin.
+- Added sticky production workspace header and masked session identity.
+- Added responsive/mobile navigation and professional table/form states.
+- Added read-only Finance Control Center architecture shell.
+- Added finance Help & Training article migration `0007_v051_finance_help.sql`.
+- Preserved RBAC, Evidence Vault, Release Gate, audit and human release authority.

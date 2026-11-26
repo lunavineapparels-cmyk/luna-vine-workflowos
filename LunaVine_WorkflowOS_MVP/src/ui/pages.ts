@@ -11,10 +11,69 @@ export async function dashboard(env: Env, email: string): Promise<string> {
   const holdCount = await env.DB.prepare("SELECT COUNT(*) AS n FROM workflow_cases WHERE release_decision = 'HOLD'").first<{ n: number }>();
   const readyCount = await env.DB.prepare("SELECT COUNT(*) AS n FROM workflow_cases WHERE release_decision = 'RELEASE_READY'").first<{ n: number }>();
   const evidenceCount = await env.DB.prepare("SELECT COUNT(*) AS n FROM evidence").first<{ n: number }>();
+  const gateTotal = await env.DB.prepare("SELECT COUNT(*) AS n FROM case_gates").first<{ n: number }>();
+  const gatePass = await env.DB.prepare("SELECT COUNT(*) AS n FROM case_gates WHERE result = 'PASS'").first<{ n: number }>();
+  const taskOpen = await env.DB.prepare("SELECT COUNT(*) AS n FROM tasks WHERE status NOT IN ('COMPLETED','CANCELLED')").first<{ n: number }>();
   const recent = await env.DB.prepare(`SELECT id,title,status,risk_level,COALESCE(release_decision,'NOT_EVALUATED') AS release_decision,updated_at FROM workflow_cases ORDER BY updated_at DESC LIMIT 8`).all<any>();
 
-  const rows = recent.results.map((r:any)=>`<tr><td><a href="/cases/${encodeURIComponent(r.id)}">${escapeHtml(r.title)}</a></td><td>${badge(r.status)}</td><td>${escapeHtml(r.risk_level)}</td><td>${badge(r.release_decision)}</td><td>${escapeHtml(r.updated_at)}</td></tr>`).join("");
-  return layout("Control Tower", email, `<div class="top"><div><div class="eyebrow">Executive Control Tower</div><div class="h1">Luna Vine BrandOS</div><div class="muted">Evidence-driven workflow execution. No manual Release Ready.</div></div><div class="actions"><a class="btn" href="/cases/new">New Product Release Case</a></div></div><div class="grid"><div class="card"><div class="muted small">Workflow Cases</div><div class="metric">${caseCount?.n ?? 0}</div></div><div class="card"><div class="muted small">Release Ready</div><div class="metric">${readyCount?.n ?? 0}</div></div><div class="card"><div class="muted small">On Hold</div><div class="metric">${holdCount?.n ?? 0}</div></div><div class="card"><div class="muted small">Evidence Records</div><div class="metric">${evidenceCount?.n ?? 0}</div></div></div><div class="section"><h2>Recent cases</h2><table class="table"><thead><tr><th>Case</th><th>Status</th><th>Risk</th><th>Release</th><th>Updated</th></tr></thead><tbody>${rows || '<tr><td colspan="5">No cases yet.</td></tr>'}</tbody></table></div>`);
+  const totalGates = gateTotal?.n ?? 0;
+  const passedGates = gatePass?.n ?? 0;
+  const gatePct = totalGates ? Math.round((passedGates / totalGates) * 100) : 0;
+  const rows = recent.results.map((r:any)=>`<tr><td><a href="/cases/${encodeURIComponent(r.id)}"><strong>${escapeHtml(r.title)}</strong></a><div class="muted tiny mono">${escapeHtml(r.id)}</div></td><td>${badge(r.status)}</td><td>${escapeHtml(r.risk_level)}</td><td>${badge(r.release_decision)}</td><td>${escapeHtml(r.updated_at)}</td></tr>`).join("");
+
+  return layout("Control Tower", email, `
+    <section class="hero-panel">
+      <div class="eyebrow">Executive Control Tower · BrandOS V5.1</div>
+      <div class="h1">Govern the brand.<br>Release with evidence.</div>
+      <div class="lede">One operating view for design, evidence, risk, production readiness, approvals and accountable release decisions. Creative approval never bypasses the Release Gate.</div>
+      <div class="actions hero-actions"><a class="btn" href="/cases/new">Create Product Release Case</a><a class="btn alt" href="/help">Open Training Center</a></div>
+    </section>
+
+    <div class="grid">
+      <div class="card metric-card"><span class="metric-accent"></span><div class="metric-label">Workflow cases</div><div class="metric">${caseCount?.n ?? 0}</div><div class="metric-note">Controlled work in the operating system</div></div>
+      <div class="card metric-card"><span class="metric-accent ok"></span><div class="metric-label">Release ready</div><div class="metric">${readyCount?.n ?? 0}</div><div class="metric-note">Passed mandatory gates + final review</div></div>
+      <div class="card metric-card"><span class="metric-accent hold"></span><div class="metric-label">On hold</div><div class="metric">${holdCount?.n ?? 0}</div><div class="metric-note">Blocked from release until resolved</div></div>
+      <div class="card metric-card"><span class="metric-accent"></span><div class="metric-label">Evidence records</div><div class="metric">${evidenceCount?.n ?? 0}</div><div class="metric-note">Traceable evidence linked to decisions</div></div>
+    </div>
+
+    <div class="section status-panel">
+      <div class="card">
+        <div class="section-head"><div><div class="eyebrow">Governance posture</div><h2>Release-control health</h2></div><span class="badge ${gatePct===100 && totalGates>0 ? 'pass' : 'hold'}">${gatePct}% gates passed</span></div>
+        <div class="status-list">
+          <div class="status-row"><div><strong>Mandatory gate completion</strong><span> ${passedGates} of ${totalGates} recorded PASS</span></div><span>${gatePct}%</span></div>
+          <div class="progress-track"><div class="progress-fill" style="width:${gatePct}%"></div></div>
+          <div class="status-row"><div><strong>Release-ready cases</strong><span> Final accountable decisions</span></div><span>${readyCount?.n ?? 0}</span></div>
+          <div class="status-row"><div><strong>Evidence Vault</strong><span> Immutable traceability records</span></div><span>${evidenceCount?.n ?? 0}</span></div>
+          <div class="status-row"><div><strong>Open operational tasks</strong><span> Work requiring action</span></div><span>${taskOpen?.n ?? 0}</span></div>
+        </div>
+      </div>
+      <div class="card soft">
+        <div class="eyebrow">Owner focus</div><h2 style="font-family:Georgia,serif;font-weight:500;margin:8px 0 12px">V5.1 launch discipline</h2>
+        <div class="notice ok">WorkflowOS is the control plane. Shopify and POD systems execute only after the required governance state is reached.</div>
+        <div class="status-list">
+          <div class="status-row"><strong>Creative endorsement</strong>${badge('APPROVED')}</div>
+          <div class="status-row"><strong>Release clearance</strong>${badge((readyCount?.n ?? 0)>0?'PARTIAL_READY':'HOLD')}</div>
+          <div class="status-row"><strong>Production publish</strong><span>Human-controlled</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-head"><div><div class="eyebrow">Work queue</div><h2>Recent cases</h2></div><a class="btn alt" href="/cases">View all cases</a></div>
+      <div class="table-wrap"><table class="table"><thead><tr><th>Case</th><th>Status</th><th>Risk</th><th>Release</th><th>Updated</th></tr></thead><tbody>${rows || '<tr><td class="empty" colspan="5">No workflow cases yet. Create the first controlled product release case.</td></tr>'}</tbody></table></div>
+    </div>
+
+    <div class="section">
+      <div class="section-head"><div><div class="eyebrow">Fast navigation</div><h2>Command shortcuts</h2></div><span class="section-kicker">Operate · Govern · Learn</span></div>
+      <div class="quick-grid">
+        <a class="quick-link" href="/designs"><strong>Design Registry</strong><span>Review canonical design records and their governed status.</span></a>
+        <a class="quick-link" href="/evidence"><strong>Evidence Vault</strong><span>Trace release decisions back to files, checksums and proof.</span></a>
+        <a class="quick-link" href="/audit"><strong>Audit Ledger</strong><span>Inspect who changed what, when, and with which outcome.</span></a>
+        <a class="quick-link" href="/products"><strong>Product Registry</strong><span>Track canonical products, variants and production identity.</span></a>
+        <a class="quick-link" href="/marketing-psychology"><strong>Marketing Psychology</strong><span>Govern hypotheses, ethical checks, experiments and learnings.</span></a>
+        <a class="quick-link" href="/admin/access"><strong>Access Administration</strong><span>Manage roles and scoped access without bypassing release authority.</span></a>
+      </div>
+    </div>`);
 }
 
 export async function casesPage(env: Env, email: string): Promise<string> {
@@ -85,4 +144,44 @@ export async function marketingExperimentDetail(env:Env,email:string,id:string):
   const learnings=await env.DB.prepare(`SELECT * FROM marketing_learning_registry WHERE experiment_id=? ORDER BY created_at DESC`).bind(id).all<any>();
   const lr=learnings.results.map((l:any)=>`<tr><td>${escapeHtml(l.learning)}</td><td>${escapeHtml(l.confidence)}</td><td>${escapeHtml(l.evidence_quality)}</td><td>${badge(l.reusable?'APPROVED':'PENDING')}</td><td>${l.reusable?'':`<form method="post" action="/api/marketing/learnings/${encodeURIComponent(l.id)}/approve"><button class="btn" type="submit">Approve reusable learning</button></form>`}</td></tr>`).join("");
   return layout("Marketing Experiment",email,`<div class="top"><div><div class="eyebrow">Experiment ${escapeHtml(e.id)}</div><div class="h1">${escapeHtml(e.hypothesis_title)}</div><div class="muted">${escapeHtml(e.channel)} · ${badge(e.status)} · Metric: ${escapeHtml(e.primary_metric)}</div></div><a class="btn alt" href="/marketing-psychology/${encodeURIComponent(e.hypothesis_id)}">Back to hypothesis</a></div><div class="grid"><div class="card"><div class="muted small">Audience</div><div style="margin-top:8px">${escapeHtml(e.audience_description||"")}</div></div><div class="card"><div class="muted small">Decision</div><div style="margin-top:8px">${escapeHtml(e.decision||"Not completed")}</div></div><div class="card"><div class="muted small">Sample size</div><div class="metric">${escapeHtml(e.sample_size??0)}</div></div><div class="card"><div class="muted small">Started</div><div class="small" style="margin-top:8px">${escapeHtml(e.started_at||"Not started")}</div></div></div><div class="section"><h2>Control vs Variant</h2><div class="form"><div class="card"><div class="eyebrow">Control</div><pre class="small" style="white-space:pre-wrap">${escapeHtml(e.control_json)}</pre></div><div class="card"><div class="eyebrow">Variant</div><pre class="small" style="white-space:pre-wrap">${escapeHtml(e.variant_json)}</pre></div></div></div>${e.status==='DRAFT'?`<div class="section"><form method="post" action="/api/marketing/experiments/${encodeURIComponent(id)}/start"><button class="btn" type="submit">Start experiment</button></form></div>`:''}${['DRAFT','RUNNING'].includes(e.status)?`<div class="section"><h2>Complete experiment</h2><div class="card"><form method="post" action="/api/marketing/experiments/${encodeURIComponent(id)}/complete" class="form"><label>Sample size<input type="number" min="0" name="sampleSize"></label><label>Decision<select name="decision"><option>WIN</option><option>LOSS</option><option>INCONCLUSIVE</option><option>STOPPED</option></select></label><label class="full">Results summary<textarea name="resultsSummary" required rows="4" placeholder="Measured result; distinguish observation from interpretation."></textarea></label><label class="full">Candidate learning<textarea name="learning" rows="3" placeholder="Optional. This remains non-reusable until explicitly approved."></textarea></label><label>Confidence<select name="confidence"><option>LOW</option><option>MEDIUM</option><option>HIGH</option></select></label><label>Evidence quality<select name="evidenceQuality"><option>EXPERIMENT</option><option>OBSERVATIONAL</option><option>CUSTOMER_RESEARCH</option><option>MIXED</option></select></label><label class="full">Applicability<input name="applicability" placeholder="Which products, segments, channels or contexts does this learning apply to?"></label><div class="full"><button class="btn" type="submit">Complete and record evidence</button></div></form></div></div>`:''}<div class="section"><h2>Learning Registry</h2><table class="table"><thead><tr><th>Learning</th><th>Confidence</th><th>Evidence</th><th>Reusable</th><th>Approval</th></tr></thead><tbody>${lr||'<tr><td colspan="5">No learning recorded.</td></tr>'}</tbody></table></div>`);
+}
+
+
+export function financeCenterPage(email:string):string {
+  return layout("Finance Control Center", email, `
+    <div class="top"><div><div class="eyebrow">FIN-001 · V5.1 Finance</div><div class="h1">Finance Control Center</div><div class="lede">Near-zero-maintenance financial operations: automate transaction flow and reconciliation, surface only exceptions, and keep money movement under explicit human control.</div></div><span class="badge hold">SETUP PHASE</span></div>
+    <div class="grid">
+      <div class="card metric-card"><span class="metric-accent"></span><div class="metric-label">Payment processing</div><div style="margin-top:14px"><strong>Shopify Payments</strong></div><div class="metric-note">Decision baseline · owner activation verification required</div></div>
+      <div class="card metric-card"><span class="metric-accent"></span><div class="metric-label">Business banking</div><div style="margin-top:14px"><strong>Mercury</strong></div><div class="metric-note">Decision baseline · account not connected</div></div>
+      <div class="card metric-card"><span class="metric-accent"></span><div class="metric-label">Accounting ledger</div><div style="margin-top:14px"><strong>QuickBooks Online</strong></div><div class="metric-note">System of record · integration not connected</div></div>
+      <div class="card metric-card"><span class="metric-accent"></span><div class="metric-label">Sales tax</div><div style="margin-top:14px"><strong>Shopify Tax</strong></div><div class="metric-note">Planned tax automation · owner/professional verification required</div></div>
+    </div>
+    <div class="section status-panel">
+      <div class="card">
+        <div class="section-head"><div><div class="eyebrow">Operating model</div><h2>Zero-maintenance by exception</h2></div><span class="badge pass">CONTROL DESIGN</span></div>
+        <div class="status-list">
+          <div class="status-row"><div><strong>Customer payment</strong><span> Shopify checkout and primary processor</span></div><span>Shopify Payments</span></div>
+          <div class="status-row"><div><strong>Cash custody</strong><span> Operating and reserve accounts</span></div><span>Business bank</span></div>
+          <div class="status-row"><div><strong>Official books</strong><span> General ledger and close</span></div><span>QuickBooks</span></div>
+          <div class="status-row"><div><strong>Management control</strong><span> Cash, margin, budget, approvals, exceptions</span></div><span>WorkflowOS</span></div>
+        </div>
+      </div>
+      <div class="card soft">
+        <div class="eyebrow">Financial safety</div><h2 style="font-family:Georgia,serif;font-weight:500;margin:8px 0 12px">Human-controlled money movement</h2>
+        <div class="notice risk">AI may read, analyze, forecast and prepare recommendations. It must not autonomously change payout destinations, transfer money, add bank accounts, or issue material refunds.</div>
+        <div class="status-list">
+          <div class="status-row"><strong>Bank / payout changes</strong>${badge('HOLD')}</div>
+          <div class="status-row"><strong>Autonomous transfers</strong>${badge('REJECTED')}</div>
+          <div class="status-row"><strong>Read / analyze / recommend</strong>${badge('APPROVED')}</div>
+        </div>
+      </div>
+    </div>
+    <div class="section"><div class="section-head"><div><div class="eyebrow">Planned automation</div><h2>Reconciliation flow</h2></div><span class="section-kicker">No fabricated balances</span></div><div class="quick-grid">
+      <div class="quick-link"><strong>1 · Order</strong><span>Shopify records the customer order, payment, discount, tax and refund lifecycle.</span></div>
+      <div class="quick-link"><strong>2 · Fulfillment cost</strong><span>Approved POD costs are matched to product/SKU and order economics.</span></div>
+      <div class="quick-link"><strong>3 · Payout</strong><span>Processor payout is matched against Shopify transactions and fees.</span></div>
+      <div class="quick-link"><strong>4 · Bank</strong><span>Deposit lands in the business operating account with traceable reference.</span></div>
+      <div class="quick-link"><strong>5 · Ledger</strong><span>QuickBooks receives the accounting entries and reconciliation evidence.</span></div>
+      <div class="quick-link"><strong>6 · Exception</strong><span>WorkflowOS alerts the owner only when amount, timing or mapping does not reconcile.</span></div>
+    </div></div>`);
 }

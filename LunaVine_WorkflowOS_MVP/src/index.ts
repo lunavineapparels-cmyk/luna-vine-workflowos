@@ -4,7 +4,7 @@ import { createProductReleaseCase, setGateResult, calculateCaseRelease } from ".
 import { storeEvidence } from "./services/evidence";
 import { createPsychographicSegment, createMarketingHypothesis, setMarketingReview, createMarketingExperiment, startMarketingExperiment, completeMarketingExperiment, approveMarketingLearning } from "./services/marketingPsychology";
 import { createOrUpdateUser, assignRole, revokeRole, setUserStatus } from "./services/accessAdmin";
-import { dashboard, casesPage, newCasePage, caseDetail, genericTable, marketingPsychologyPage, newPsychographicSegmentPage, newMarketingHypothesisPage, marketingHypothesisDetail, marketingExperimentDetail } from "./ui/pages";
+import { dashboard, casesPage, newCasePage, caseDetail, genericTable, marketingPsychologyPage, newPsychographicSegmentPage, newMarketingHypothesisPage, marketingHypothesisDetail, marketingExperimentDetail, financeCenterPage } from "./ui/pages";
 import { accessAdminPage } from "./ui/adminPages";
 import { helpCenterPage, helpArticlePage } from "./ui/helpPages";
 export { ProductReleaseWorkflow } from "./workflows/productRelease";
@@ -31,6 +31,7 @@ export default {
       if (request.method === "GET" && p.startsWith("/cases/")) { requirePermission(actor,"workflow.read"); const caseId=decodeURIComponent(p.split("/")[2]||""); return html(await caseDetail(env,actor.email,caseId)); }
       if (request.method === "GET" && p === "/designs") { requirePermission(actor,"design.read"); return html(await genericTable(env,actor.email,"Designs","SELECT id,name,collection,status,artwork_version_id,updated_at FROM designs ORDER BY updated_at DESC",["id","name","collection","status","artwork_version_id","updated_at"])); }
       if (request.method === "GET" && p === "/products") { requirePermission(actor,"product.read"); return html(await genericTable(env,actor.email,"Products","SELECT id,name,parent_sku,supplier,status,updated_at FROM products ORDER BY updated_at DESC",["id","name","parent_sku","supplier","status","updated_at"])); }
+      if (request.method === "GET" && p === "/finance") { requirePermission(actor,"dashboard.read"); return html(financeCenterPage(actor.email)); }
       if (request.method === "GET" && p === "/evidence") { requirePermission(actor,"evidence.read"); return html(await genericTable(env,actor.email,"Evidence Vault","SELECT id,evidence_type,file_name,owner_email,status,created_at FROM evidence ORDER BY created_at DESC",["id","evidence_type","file_name","owner_email","status","created_at"])); }
       if (request.method === "GET" && p === "/audit") { requirePermission(actor,"audit.read"); return html(await genericTable(env,actor.email,"Audit Ledger","SELECT created_at,actor_email,action,object_type,object_id FROM audit_events ORDER BY created_at DESC LIMIT 200",["created_at","actor_email","action","object_type","object_id"])); }
 
